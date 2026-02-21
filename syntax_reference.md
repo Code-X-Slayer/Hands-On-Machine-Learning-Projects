@@ -108,4 +108,35 @@ Standard library for interacting with the operating system and file paths.
 SciKit-Learn estimators store learned parameters with a trailing underscore.
 - `imputer.statistics_`: Stores the computed medians for each attribute.
 - `encoder.categories_`: Stores the list of categories found during fitting.
-- `model.feature_importances_`: (Applicable later) Stores the importance/weight of each feature.
+- `model.feature_importances_`: Stores the importance/weight of each feature.
+- `grid_search.best_params_`: Stores the optimal hyperparameter combination.
+- `grid_search.best_estimator_`: The actual model instance with the best hyperparameters.
+
+---
+
+## Scikit-Learn: Model Training & Evaluation
+
+### `sklearn.linear_model`
+- `LinearRegression()`: Ordinary least squares Linear Regression.
+- `model.fit(X, y)`: Trains the model.
+- `model.predict(X)`: Makes predictions on new data.
+
+### `sklearn.tree`
+- `DecisionTreeRegressor()`: A model that predicts by learning simple decision rules inferred from the data features.
+
+### `sklearn.ensemble`
+- `RandomForestRegressor()`: A meta estimator that fits a number of classifying decision trees on various sub-samples of the dataset and uses averaging to improve predictive accuracy and control over-fitting.
+
+### `sklearn.metrics`
+- `mean_squared_error(y_true, y_pred)`: Measures the average squared difference between estimated and actual values.
+
+### `sklearn.model_selection`
+- `cross_val_score(estimator, X, y, scoring, cv)`: Evaluates a score by cross-validation. Note that `scoring="neg_mean_squared_error"` returns negative values (utility vs cost convention).
+- `GridSearchCV(estimator, param_grid, cv, scoring)`: Exhaustive search over specified parameter values for an estimator.
+
+---
+
+## Scipy: Statistical Analysis
+
+### `scipy.stats`
+- `stats.t.interval(confidence, df, loc, scale)`: Computes a confidence interval based on a t-distribution. Used in this project to estimate the 95% confidence interval of the prediction error.

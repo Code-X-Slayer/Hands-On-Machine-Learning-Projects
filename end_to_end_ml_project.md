@@ -199,21 +199,52 @@ housing_prepared = full_pipeline.fit_transform(housing)
 
 ---
 
-## 6. Forward Looking: Model Training and Evaluation
+---
 
-As the project proceeds to the training phase, the following theoretical principles will guide model selection and tuning.
+## 6. Select and Train a Model
 
-### 6.1 The Need for Cross-Validation
+### 6.1 Training and Evaluating
+We start with a **Linear Regression** model as a baseline. However, as Géron notes, a simple model might underfit the data.
+
+```python
+from sklearn.linear_model import LinearRegression
+lin_reg = LinearRegression()
+lin_reg.fit(housing_prepared, housing_labels)
+```
+
+To explore more complex patterns, we try a `DecisionTreeRegressor`. Interestingly, this model yields an RMSE of **0.0** on the training set, indicating severe **overfitting** (it has simply memorized the data).
+
+### 6.2 Better Evaluation Using Cross-Validation
+To get a more realistic estimate of model performance, we use **K-fold Cross-Validation** (via `cross_val_score`). This splits the training set into 10 subsets (folds) and trains/evaluates the model 10 times.
+
+- **Linear Regression RMSE (Mean)**: ~69,104
+- **Decision Tree RMSE (Mean)**: ~71,432
+
+Despite the initial perfect (0.0) score, the Decision Tree actually performs worse than the Linear model when cross-validated. This highlights the importance of not trusting training error alone.
+
+### 6.3 Ensemble Learning: Random Forest
+Finally, we try a `RandomForestRegressor`, which trains many Decision Trees on random subsets of the features and then averages their predictions. This ensemble method typically performs much better and is less prone to overfitting than a single tree.
+
+---
+
+## 7. Fine-Tune Your Model
+
+### 7.1 Grid Search
+Instead of fiddling with hyperparameters manually, we use `GridSearchCV`. We provide a set of hyperparameters (e.g., `n_estimators`, `max_features`) and Scikit-Learn uses cross-validation to find the best combination.
+
+- **Best Parameters found**: `max_features=6, n_estimators=30`
+- **Feature Importance**: Analyzing the best model reveals which features are most predictive. In this project, `median_income` is by far the most important feature, followed by the `INLAND` category and `pop_per_hhold`.
+
+### 7.2 Final Evaluation on the Test Set
+After selecting the best model and tuning its hyperparameters, we evaluate it on the **test set**.
+
 > [!IMPORTANT]
-> **Why Cross-Validation is Necessary**
-> Evaluating a model on the same data it was trained on leads to overfitting. K-fold cross-validation splits the training set into subsets, training the model on $K-1$ folds and validating on the remaining 1. This provides a much more robust estimate of how the model will perform on unseen data.
+> **Data Leakage Check**: Call `transform()`, not `fit_transform()`, on the test set. This ensures you use the parameters learned from the training data, accurately reflecting how the model will perform on unseen data.
 
-### 6.2 Bias-Variance Intuition
-> [!NOTE]
-> **Bias–Variance Trade-off**
-> - **High Bias**: The model is too simple (underfitting), missing the underlying patterns.
-> - **High Variance**: The model is too complex (overfitting), reacting to noise in the training data rather than the signal.
-> The goal is to find the "sweet spot" that minimizes total error.
+- **Final RMSE**: ~47,491
+- **95% Confidence Interval**: ~45,481 to ~49,419
+
+This interval gives a measure of how precise the prediction is. A relatively narrow interval (in terms of housing prices) suggests the model is fairly stable.
 
 ---
 
@@ -221,17 +252,15 @@ As the project proceeds to the training phase, the following theoretical princip
 - **Data Snooping**: The silent killer of ML models. Maintain strict separation of test data.
 - **Stratified Sampling**: Essential for biased/small datasets to ensure representativeness.
 - **Pipelines**: The foundation for production-ready, reproducible code.
-- **Feature Engineering**: Often more impactful than model hyperparameter tuning.
-
-## Common Pitfalls Avoided
-- **Leaking information** by computing median/mean on the full dataset.
-- **Assuming linearity** solely based on Pearson correlation.
-- **Model degradation** due to unscaled features in distance-based algorithms.
+- **Bias–Variance Trade-off**: Finding the balance between underfitting and overfitting.
+- **Cross-Validation**: A robust way to evaluate models without leaking data.
 
 ## Design Decisions Explained
 1. **Decision**: Using `StratifiedShuffleSplit` instead of `train_test_split`.
    - **Reason**: Income is a heavy predictor; splitting randomly could lead to a test set unrepresentative of high/low-income districts.
 2. **Decision**: One-Hot Encoding for `ocean_proximity`.
-   - **Reason**: The proximity values ("INLAND", "NEAR OCEAN") are nominal; ordinal encoding would imply an artificial ranking.
+   - **Reason**: The proximity values are nominal; ordinal encoding would imply an artificial ranking that the model might try to exploit.
 3. **Decision**: Custom Transformer for attribute addition.
-   - **Reason**: Automates exploration of feature combinations during Cross-Validation.
+   - **Reason**: Automates exploration of feature combinations during GridSearchCV and Cross-Validation.
+4. **Decision**: Using `GridSearchCV` for hyperparameter tuning.
+   - **Reason**: More systematic and reproducible than manual "trial and error."
