@@ -11,7 +11,7 @@ The current focus is on **Part I: The Fundamentals of Machine Learning**, specif
 ### 🏠 California Housing Price Prediction (Chapter 2)
 In this project, I implement a multivariate regression model to predict median housing prices in California districts. 
 
-- **Implementation**: [end_to_end.ipynb](https://github.com/Code-X-Slayer/Hands-On-Machine-Learning-Projects/blob/main/end_to_end.ipynb)
+- **Implementation**: [end_to_end_ml_project.ipynb](https://github.com/Code-X-Slayer/Hands-On-Machine-Learning-Projects/blob/main/end_to_end_ml_project.ipynb)
 - **Technical Engineering Documentation**: [end_to_end_ml_project.md](https://github.com/Code-X-Slayer/Hands-On-Machine-Learning-Projects/blob/main/end_to_end_ml_project.md)
 - **Library & Syntax Reference**: [syntax_reference.md](https://github.com/Code-X-Slayer/Hands-On-Machine-Learning-Projects/blob/main/syntax_reference.md)
 
